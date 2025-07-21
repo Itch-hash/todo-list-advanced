@@ -12,7 +12,7 @@ function addTask(event) {
     "rounded-lg",
     "shadow-sm"
   );
-  newLi.id = "task";
+  newLi.id = "task-" + Date.now();
 
   const newInput = document.createElement("input");
   newInput.type = "checkbox";
@@ -65,10 +65,12 @@ function addTask(event) {
 
   taskList.appendChild(newLi);
   taskInput.value = "";
+  saveList();
 }
 
 function removeTask(newLi) {
   newLi.remove();
+  saveList();
 }
 
 function doneTask(newLabel, newInput) {
@@ -79,4 +81,30 @@ function doneTask(newLabel, newInput) {
     newLabel.classList.remove("line-through");
     newLabel.classList.replace("text-gray-500", "text-gray-800");
   }
+  saveList();
 }
+
+function saveList() {
+  const savedList = [];
+
+  taskList.querySelectorAll("li").forEach((liElement) => {
+    const checkbox = liElement.querySelector('input[type="checkbox"]');
+    const label = liElement.querySelector("label");
+
+    if (checkbox && label) {
+      savedList.push({
+        // Push a *new object* for *each* <li>
+        id: liElement.id, // Get the unique ID for the task
+        text: label.textContent, // Get the task's text
+        isChecked: checkbox.checked, // Get the checkbox's state
+      });
+    }
+  });
+
+  localStorage.setItem("saved list", JSON.stringify(savedList));
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+  const savedList = JSON.parse(localStorage.getItem("saved list"));
+  console.log(savedList);
+});
