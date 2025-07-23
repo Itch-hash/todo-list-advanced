@@ -104,82 +104,93 @@ function saveList() {
   localStorage.setItem("saved list", JSON.stringify(savedList));
 }
 
+// Load whats in LocalStorage
 document.addEventListener("DOMContentLoaded", function () {
   const taskList = document.getElementById("taskList");
   const savedList = JSON.parse(localStorage.getItem("saved list"));
 
-  savedList.forEach((element) => {
-    const newLi = document.createElement("li");
-    newLi.classList.add(
-      "flex",
-      "items-center",
-      "bg-gray-50",
-      "p-3",
-      "rounded-lg",
-      "shadow-sm"
-    );
-    newLi.id = "task-" + element.id.split("-")[1];
+  if (savedList && Array.isArray(savedList)) {
+    savedList.forEach((element) => {
+      const newLi = document.createElement("li");
+      newLi.classList.add(
+        "flex",
+        "items-center",
+        "bg-gray-50",
+        "p-3",
+        "rounded-lg",
+        "shadow-sm"
+      );
+      newLi.id = "task-" + element.id.split("-")[1];
 
-    const newInput = document.createElement("input");
-    newInput.type = "checkbox";
-    const checkboxId = "checkbox-" + element.id.split("-")[1];
-    newInput.id = checkboxId;
-    newInput.checked = element.isChecked;
+      const newInput = document.createElement("input");
+      newInput.type = "checkbox";
+      const checkboxId = "checkbox-" + element.id.split("-")[1];
+      newInput.id = checkboxId;
+      newInput.checked = element.isChecked;
 
-    newInput.classList.add(
-      "form-checkbox",
-      "h-5",
-      "w-5",
-      "rounded-md",
-      "mr-3",
-      "cursor-pointer"
-    );
-    newLi.appendChild(newInput);
-    const newLabel = document.createElement("label");
-    newLabel.htmlFor = checkboxId;
-    newLabel.classList.add("flex-grow", "text-lg", "text-gray-800");
-    newLabel.textContent = element.text;
-    newLi.appendChild(newLabel);
-    const newButton = document.createElement("button");
-    newButton.classList.add(
-      "ml-auto",
-      "text-red-500",
-      "hover:text-red-700",
-      "hover:cursor-pointer",
-      "focus:outline-none"
-    );
-    newLi.appendChild(newButton);
-    const newSvg = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "svg"
-    );
-    newSvg.classList.add("w-6", "h-6");
-    newSvg.setAttribute("fill", "none");
-    newSvg.setAttribute("stroke", "currentColor");
-    newSvg.setAttribute("viewBox", "0 0 24 24");
+      newInput.classList.add(
+        "form-checkbox",
+        "h-5",
+        "w-5",
+        "rounded-md",
+        "mr-3",
+        "cursor-pointer"
+      );
+      newLi.appendChild(newInput);
+      const newLabel = document.createElement("label");
+      newLabel.htmlFor = checkboxId;
+      newLabel.classList.add("flex-grow", "text-lg", "text-gray-800");
+      newLabel.textContent = element.text;
+      newLi.appendChild(newLabel);
 
-    const newPath = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "path"
-    );
-    newPath.setAttribute("stroke-linecap", "round");
-    newPath.setAttribute("stroke-linejoin", "round");
-    newPath.setAttribute("stroke-width", "2");
-    newPath.setAttribute("d", "M6 18L18 6M6 6l12 12");
-    newSvg.appendChild(newPath);
+      ////The X icon next to the task
 
-    newButton.appendChild(newSvg);
+      const newButton = document.createElement("button");
+      newButton.classList.add(
+        "ml-auto",
+        "text-red-500",
+        "hover:text-red-700",
+        "hover:cursor-pointer",
+        "focus:outline-none"
+      );
+      newLi.appendChild(newButton);
 
-    taskList.appendChild(newLi);
-    newInput.addEventListener("change", () => doneTask(newLabel, newInput));
-    newButton.addEventListener("click", () => removeTask(newLi));
-    if (element.isChecked) {
-      newLabel.classList.add("line-through");
-      newLabel.classList.replace("text-gray-800", "text-gray-500");
-    } else {
-      newLabel.classList.remove("line-through");
-      newLabel.classList.replace("text-gray-500", "text-gray-800");
-    }
-  });
-  saveList();
+      const newSvg = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+      );
+      newSvg.classList.add("w-6", "h-6");
+      newSvg.setAttribute("fill", "none");
+      newSvg.setAttribute("stroke", "currentColor");
+      newSvg.setAttribute("viewBox", "0 0 24 24");
+
+      const newPath = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path"
+      );
+      newPath.setAttribute("stroke-linecap", "round");
+      newPath.setAttribute("stroke-linejoin", "round");
+      newPath.setAttribute("stroke-width", "2");
+      newPath.setAttribute("d", "M6 18L18 6M6 6l12 12");
+
+      newSvg.appendChild(newPath);
+      newButton.appendChild(newSvg);
+      taskList.appendChild(newLi);
+
+      //Call backs to retrieve original state
+
+      newInput.addEventListener("change", () => doneTask(newLabel, newInput));
+      newButton.addEventListener("click", () => removeTask(newLi));
+      if (element.isChecked) {
+        newLabel.classList.add("line-through");
+        newLabel.classList.replace("text-gray-800", "text-gray-500");
+      } else {
+        newLabel.classList.remove("line-through");
+        newLabel.classList.replace("text-gray-500", "text-gray-800");
+      }
+    });
+    saveList();
+  } else {
+    console.log("No Saved list Found, Start adding tasks to get saved...");
+  }
 });
